@@ -1,26 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Core from "./navigation";
+import { BrowserRouter } from "react-router-dom";
+import { ThemeContext, themes, toggleTheme } from "./hooks/themeContext";
+import { AuthContext } from "./hooks/AuthContext";
+import { useState } from "react";
+import { ACCESS_TOKEN } from "./utils/constants";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+const App = () => {
+  const [loginStatus, setLoginStatus] = useState<undefined | boolean>(
+    undefined
   );
-}
+
+  const loginCheck = (token: string) => {
+    localStorage.setItem(ACCESS_TOKEN, token);
+    setLoginStatus(true);
+    console.log("logged in ");
+  };
+
+  const logoutCheck = () => {
+    localStorage.removeItem(ACCESS_TOKEN);
+    setLoginStatus(false);
+    console.log("logged out ");
+  };
+
+  return (
+    <ThemeContext.Provider value={themes.dark}>
+      <AuthContext.Provider
+        value={{
+          isLogged: loginStatus,
+          login: loginCheck,
+          logoutt: logoutCheck,
+        }}
+      >
+        <BrowserRouter>
+          <Core />
+        </BrowserRouter>
+      </AuthContext.Provider>
+    </ThemeContext.Provider>
+  );
+};
 
 export default App;
